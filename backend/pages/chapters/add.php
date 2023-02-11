@@ -18,9 +18,10 @@
         display: flex;
         border: 1px solid #eee;
         width: 100%;
-        max-width: 400px;
+        max-width: 120px;
         color: #808A9D;
         cursor: pointer;
+        margin-bottom: 10px;
     }
 
     .add-image:hover {
@@ -32,24 +33,65 @@
         flex-wrap: wrap;
     }
 
-    .item {
+    .items {
         border: 1px solid #eee;
         display: flex;
-        width: 31.333%;
+        flex-direction: column;
+        width: 18%;
+        height: 180px;
         margin: 5px 1%;
+        position: relative;
+        z-index: 101;
     }
 
+    .wrap {
+        display: flex;
+    }
     .icon {
         color: #808A9D;
-        width: 100%;
+        width: 25px;
+        height: 25px;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        position: absolute;
+        z-index: 100;
     }
 
     .icon:hover {
         background-color: #eee;
+    }
+
+    .button {
+        position: absolute;
+        top: 86%;
+        display: none;
+    }
+
+    .remove, .change {
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .icon-plus {
+        color: #808A9D;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 180px;
+        position: absolute;
+    }
+
+    .icon-plus:hover {
+        color: black;
+    }
+
+    .img {
+        width: 100%;
+        height: 180px;
+        display: none;
     }
 </style>
 <body class="sb-nav-fixed">
@@ -78,12 +120,25 @@
                             <input class="form-control" type="text" placeholder="name" name="name">
                         </div>
                         <div class="add-image">
-                            <span class="icon-sm icon-add" style="margin-right: 5px;"><i class="fas fa-plus"></i></span>
+                            <span class="icon-sm icon-add" style="margin-right: 5px; margin-left: 5px;"><i class="fas fa-plus"></i></span>
                             <span class="js-add-a-card">Add a image</span>
                         </div>
                         <div class="list-item">
-                            
+                            <div class="items">
+                                <div class="wrap">
+                                    <input hidden class="file" type="file" accept="image/*" onchange="loadFile(event)"/>
+                                </div>
+                                <div class="image">
+                                    <img src="#" alt="" class="img" id="output">
+                                </div>
+                                <div class="icon-plus"><i class="fas fa-plus"></i></div>
+                                <div class="button"> 
+                                    <span class="remove text-danger">remove</span> 
+                                    <span class="change text-warning">change</span> 
+                                </div>
+                            </div>    
                         </div>
+                        <input type="submit" name="Create" class="btn btn-success" >
                    </form>  
                 </div>
             </main>
@@ -100,12 +155,25 @@
     <script>
         $(function() {
             $('.add-image').click(function() {
-                $('.list-item').append('<div class="item"><div class="file"><input type="file"/></div><div class="icon"><i class="fas fa-times"></i></div></div>');
+                $('.list-item').append('<div class="items"> <div class="wrap"> <input type="file" class="file" hidden accept="image/*" onchange="loadFile(event)"/><div class="icon"><i class="fas fa-times"></i></div> </div> <div class="image"> <img src="#" alt="" class="img" id="output"> </div><div class="icon-plus"> <i class="fas fa-plus"></i> </div> <div class="button"> <span class="remove text-danger">remove</span> <span class="change text-warning">change</span> </div> </div>');
             });
 
-            $('.icon').click(function() {
-                $('.item').remove();
+            $(document).on('click', '.icon', function() {
+                $(this).closest('.items').remove();
+            });
+
+            $(document).on('click', '.items .icon-plus', function() {
+                $(this).closest('.items').find('.file').trigger('click');
+                $(this).closest('.items').find('.button').css('display', 'block');
+                $(this).closest('.items').find('.img').css('display', 'block');
             });
         });
+            var loadFile = function(event) {
+            var output = document.getElementById('output');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = function() {
+            URL.revokeObjectURL(output.src) // free memory
+                }
+            };
     </script>
 </html>
